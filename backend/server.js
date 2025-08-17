@@ -11,12 +11,15 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Import routes
 const transcriptRoutes = require('./src/routes/transcript');
 const emailRoutes = require('./src/routes/email');
 
-// Routes
+// Routes - ensure these are defined correctly
 app.use('/api/transcript', transcriptRoutes);
 app.use('/api/email', emailRoutes);
+
+// Root endpoint
 app.get('/', (req, res) => {
     res.json({ 
         message: 'MeetingMinds API is running',
@@ -32,9 +35,15 @@ app.get('/health', (req, res) => {
     res.json({ status: 'healthy', timestamp: new Date().toISOString() });
 });
 
-// Handle 404
-app.use('*', (req, res) => {
+// Handle 404 - this should be last
+app.use((req, res) => {
     res.status(404).json({ error: 'Route not found' });
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({ error: 'Something went wrong!' });
 });
 
 // For Vercel serverless deployment
