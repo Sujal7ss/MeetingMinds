@@ -22,4 +22,22 @@ export const transcriptService = {
   },
 };
 
+// API service for email operations
+export const emailService = {
+  async sendSummaryEmail(to: string[], subject: string, summary: string, transcript?: string) {
+    try {
+      const response = await api.post('/email/send', {
+        to,
+        subject,
+        summary,
+        transcript
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error sending email:', error);
+      throw error;
+    }
+  },
+};
+
 export default api;

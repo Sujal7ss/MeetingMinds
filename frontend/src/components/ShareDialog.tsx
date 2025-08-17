@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
+import { emailService } from '@/services/api';
 
 interface ShareDialogProps {
   isOpen: boolean;
@@ -65,17 +66,29 @@ export const ShareDialog = ({ isOpen, onClose, summary }: ShareDialogProps) => {
 
     setIsSharing(true);
     
-    // Simulate email sending (replace with actual API call)
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    toast({
-      title: "Summary shared successfully!",
-      description: `Sent to ${recipients.length} recipient${recipients.length > 1 ? 's' : ''}.`,
-    });
-    
-    setIsSharing(false);
-    setRecipients([]);
-    onClose();
+    try {
+      await emailService.sendSummaryEmail(
+        recipients,
+        'Meeting Summary',
+        summary
+      );
+      
+      toast({
+        title: "Summary shared successfully!",
+        description: `Sent to ${recipients.length} recipient${recipients.length > 1 ? 's' : ''}.`,
+      });
+      
+      setRecipients([]);
+      onClose();
+    } catch (error) {
+      toast({
+        title: "Failed to send email",
+        description: "There was an error sending the summary. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSharing(false);
+    }
   };
 
   return (
