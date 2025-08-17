@@ -18,36 +18,31 @@ const Index = () => {
     setTranscript(transcriptText);
     setIsGenerating(true);
     
-    // Simulate AI generation (replace with actual AI API call)
-    await new Promise(resolve => setTimeout(resolve, 3000));
-    
-    // Mock AI-generated summary
-    const mockSummary = `# Meeting Summary
+    try {
+      const response = await fetch('http://localhost:5000/api/transcript', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          transcript: transcriptText,
+          prompt: prompt 
+        }),
+      });
 
-## Key Decisions Made
-- Approved the new product roadmap for Q2 2024
-- Selected React and TypeScript for the frontend architecture
-- Agreed to implement the MVC pattern for better code organization
+      if (!response.ok) {
+        throw new Error('Failed to generate summary');
+      }
 
-## Action Items
-- **John Smith**: Prepare technical specifications by March 15th
-- **Sarah Johnson**: Set up development environment by March 10th
-- **Mike Chen**: Review security requirements by March 12th
-
-## Important Discussions
-The team discussed the importance of scalable architecture and decided to use Supabase for backend services. There was consensus on implementing proper error handling and user authentication from the start.
-
-## Next Steps
-1. Begin development phase
-2. Schedule weekly check-ins
-3. Set up CI/CD pipeline
-
-**Meeting Duration**: 45 minutes  
-**Participants**: John Smith, Sarah Johnson, Mike Chen, Lisa Wang  
-**Date**: ${new Date().toLocaleDateString()}`;
-
-    setSummary(mockSummary);
-    setIsGenerating(false);
+      const data = await response.json();
+      setSummary(data.summary);
+    } catch (error) {
+      console.error('Error generating summary:', error);
+      // Fallback to a simple error message
+      setSummary('# Error\n\nFailed to generate summary. Please try again.');
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const handleShare = () => {
