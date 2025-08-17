@@ -11,11 +11,5 @@
       "src": "/(.*)",
       "dest": "/server.js"
     }
-  ],
-  "env": {
-    "GROQ_API_KEY": "@groq-api-key",
-    "EMAIL_USER": "@email-user",
-    "EMAIL_PASS": "@email-pass",
-    "EMAIL_SERVICE": "@email-service"
-  }
+  ]
 }
