@@ -4,6 +4,7 @@ import { TranscriptUpload } from '@/components/TranscriptUpload';
 import { PromptCustomizer } from '@/components/PromptCustomizer';
 import { SummaryEditor } from '@/components/SummaryEditor';
 import { ShareDialog } from '@/components/ShareDialog';
+import { transcriptService } from '@/services/api';
 
 const Index = () => {
   const [transcript, setTranscript] = useState('');
@@ -19,26 +20,10 @@ const Index = () => {
     setIsGenerating(true);
     
     try {
-      const response = await fetch('http://localhost:5000/api/transcript', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-          transcript: transcriptText,
-          prompt: prompt 
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to generate summary');
-      }
-
-      const data = await response.json();
+      const data = await transcriptService.generateSummary(transcriptText);
       setSummary(data.summary);
     } catch (error) {
       console.error('Error generating summary:', error);
-      // Fallback to a simple error message
       setSummary('# Error\n\nFailed to generate summary. Please try again.');
     } finally {
       setIsGenerating(false);
