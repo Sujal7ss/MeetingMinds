@@ -7,6 +7,24 @@ dotenv.config();
 
 const app = express();
 
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(",")
+  : ["*"]; // fallback if not set
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    // If no origin (like Postman or curl) or origin is in the list
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+};
+
 // Middleware
 app.use(cors());
 app.use(express.json());
